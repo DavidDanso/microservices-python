@@ -24,7 +24,7 @@ Convert video files to MP3 format using a distributed microservices architecture
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/microservices-python.git
+git clone https://github.com/DavidDanso/microservices-python.git
 cd microservices-python
 
 # Create environment file
@@ -52,20 +52,20 @@ Required variables in `.env`:
 
 ```
 # Auth Service
-AUTH_DB_HOST=mysql
-AUTH_DB_USER=admin
-AUTH_DB_PASSWORD=secret
-AUTH_DB_NAME=auth
+AUTH_DB_HOST=
+AUTH_DB_USER=
+AUTH_DB_PASSWORD=
+AUTH_DB_NAME=
 
 # RabbitMQ
-RABBITMQ_HOST=rabbitmq
-RABBITMQ_USER=guest
-RABBITMQ_PASSWORD=guest
+RABBITMQ_HOST=
+RABBITMQ_USER=
+RABBITMQ_PASSWORD=
 
 # MongoDB
-MONGO_HOST=mongodb
-MONGO_USER=admin
-MONGO_PASSWORD=secret
+MONGO_HOST=
+MONGO_USER=
+MONGO_PASSWORD=
 ```
 
 ## API Endpoints
@@ -122,17 +122,4 @@ Access service metrics:
 4. Push branch: `git push origin feature-name`
 5. Submit pull request
 
-## License
-
-MIT License - See LICENSE file for details
-
-## Support
-
-- Documentation: `/docs`
-- Issues: GitHub Issues
-- Wiki: Project Wiki
-
----
-
-Maintained by [Your Name/Organization]
 Last updated: January 2025
