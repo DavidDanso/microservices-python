@@ -1,123 +1,138 @@
-````markdown
-# Microservices with Python
+# Python Microservices Video-to-MP3 Converter
 
-This repository provides a hands-on tutorial on building a microservices architecture using Python, Kubernetes, RabbitMQ, MongoDB, and MySQL. It is based on the [freeCodeCamp.org tutorial](https://www.freecodecamp.org) and aims to offer practical experience in developing distributed systems.
+Convert video files to MP3 format using a distributed microservices architecture. Built with Python, Kubernetes, RabbitMQ, MongoDB, and MySQL.
 
-## Table of Contents
+## System Architecture
 
-- [Architecture Overview](#architecture-overview)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Running the Application](#running-the-application)
-- [Contributing](#contributing)
-- [License](#license)
+- **API Gateway**: Entry point for all client requests
+- **Auth Service**: Handles user authentication (MySQL)
+- **Converter Service**: Processes video to MP3 conversion
+- **Notification Service**: Sends conversion completion emails
+- **Storage**: MongoDB for videos/MP3s, MySQL for user data
+- **Message Queue**: RabbitMQ for service communication
 
-## Architecture Overview
-
-The application is designed to convert videos into MP3 files through the following workflow:
-
-1. **Authentication**: Users log in via the API Gateway, which communicates with the Auth service to validate credentials stored in a MySQL database and returns an access token.
-2. **Video Upload**: Users upload videos through the API Gateway, which stores them in MongoDB and places a message in the RabbitMQ queue indicating a new video is ready for processing.
-3. **Conversion**: The Video-to-MP3 service retrieves the video from MongoDB, converts it to MP3 format, and stores the converted file back in MongoDB. It then sends a message to the RabbitMQ queue indicating the conversion is complete.
-4. **Notification**: The Notification service listens for messages about completed conversions and sends an email to the user notifying them that their MP3 file is ready.
-5. **Download**: Users can download the converted MP3 file through the API Gateway.
-
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
-Before running the application, ensure you have the following installed:
+- Docker
+- Kubernetes cluster
+- kubectl CLI
+- Git
 
-- **Docker**: [Install Docker](https://docs.docker.com/get-docker/) to build and manage containerized applications.
-- **Kubernetes**: [Set up a Kubernetes cluster](https://kubernetes.io/docs/setup/) to orchestrate the deployment of services.
-- **RabbitMQ**: Deploy RabbitMQ for message queuing between services.
-- **MongoDB**: Deploy MongoDB for storing videos and converted MP3 files.
-- **MySQL**: Deploy MySQL for user authentication data.
+### Clone and Setup
 
-### Installation
+```bash
+# Clone repository
+git clone https://github.com/your-username/microservices-python.git
+cd microservices-python
 
-1. **Fork the Repository**:
+# Create environment file
+cp .env.example .env
+# Edit .env with your configurations
+```
 
-   - Navigate to the [GitHub repository](https://github.com/DavidDanso/microservices-python).
-   - Click the "Fork" button in the top-right corner to create your own copy of the repository.
+### Deploy Services
 
-2. **Clone the Repository**:
+```bash
+# Start Kubernetes
+minikube start
 
-   ```bash
-   git clone https://github.com/your-username/microservices-python.git
-   cd microservices-python
-   ```
-````
+# Deploy core services
+kubectl apply -f k8s/
 
-3. **Set Up Environment Variables**:
+# Verify deployments
+kubectl get pods
+kubectl get services
+```
 
-   Create a `.env` file in the root directory and define the necessary environment variables for each service (e.g., database credentials, RabbitMQ settings).
+### Environment Variables
 
-4. **Build Docker Images**:
+Required variables in `.env`:
 
-   Build the Docker images for each service:
+```
+# Auth Service
+AUTH_DB_HOST=mysql
+AUTH_DB_USER=admin
+AUTH_DB_PASSWORD=secret
+AUTH_DB_NAME=auth
 
-   ```bash
-   docker build -t auth-service ./auth
-   docker build -t converter-service ./converter
-   docker build -t gateway-service ./gateway
-   docker build -t notification-service ./notification
-   ```
+# RabbitMQ
+RABBITMQ_HOST=rabbitmq
+RABBITMQ_USER=guest
+RABBITMQ_PASSWORD=guest
 
-### Running the Application
+# MongoDB
+MONGO_HOST=mongodb
+MONGO_USER=admin
+MONGO_PASSWORD=secret
+```
 
-1. **Start the Kubernetes Cluster**:
+## API Endpoints
 
-   ```bash
-   minikube start
-   ```
+### Authentication
 
-2. **Deploy Services**:
+- POST `/auth/login`: User login
+- POST `/auth/register`: Create account
 
-   Apply the Kubernetes configurations for each service:
+### Video Processing
 
-   ```bash
-   kubectl apply -f auth/kubernetes
-   kubectl apply -f converter/kubernetes
-   kubectl apply -f gateway/kubernetes
-   kubectl apply -f notification/kubernetes
-   ```
+- POST `/upload`: Upload video file
+- GET `/download/{file_id}`: Download converted MP3
+- GET `/status/{file_id}`: Check conversion status
 
-3. **Configure RabbitMQ**:
+## Development Setup
 
-   After deploying RabbitMQ, create the necessary queues:
+1. Install development dependencies:
 
-   - `video`: Queue for videos awaiting conversion.
-   - `mp3`: Queue for notifications of completed conversions.
+```bash
+pip install -r requirements-dev.txt
+```
 
-   Access the RabbitMQ management interface to set up these queues.
+2. Run tests:
 
-4. **Access the Application**:
+```bash
+pytest tests/
+```
 
-   Use the API Gateway's external IP to interact with the application. You can obtain the IP address by running:
+3. Local development with Docker Compose:
 
-   ```bash
-   minikube service gateway
-   ```
+```bash
+docker-compose up --build
+```
 
-5. **Shutdown**:
+## Monitoring
 
-   Once finished, clean up the environment:
+Access service metrics:
 
-   ```bash
-   minikube delete --all
-   ```
+- RabbitMQ Dashboard: `http://localhost:15672`
+- Kubernetes Dashboard: `minikube dashboard`
+
+## Common Issues
+
+1. **Services not connecting**: Check network policies and service DNS names
+2. **Conversion failing**: Verify ffmpeg installation in converter service
+3. **Queue backup**: Monitor RabbitMQ memory usage and consumer count
 
 ## Contributing
 
-Contributions are welcome! Please fork this repository and submit a pull request with your improvements.
+1. Fork repository
+2. Create feature branch: `git checkout -b feature-name`
+3. Commit changes: `git commit -am 'Add feature'`
+4. Push branch: `git push origin feature-name`
+5. Submit pull request
 
 ## License
 
-This project is licensed under the MIT License.
+MIT License - See LICENSE file for details
 
-```
+## Support
 
-*Note: This README is structured to provide a clear and concise overview of the project, its architecture, setup instructions, and contribution guidelines.*
-```
+- Documentation: `/docs`
+- Issues: GitHub Issues
+- Wiki: Project Wiki
+
+---
+
+Maintained by [Your Name/Organization]
+Last updated: January 2025
